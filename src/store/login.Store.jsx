@@ -1,19 +1,22 @@
 // login module
 import {makeAutoObservable} from 'mobx'
-import {http} from '@/utils'
+import {http,setToken,getToken} from '@/utils'
 class LoginStore{
-  token=''
+  //初始化时使用getToken储存到token中
+  token=getToken||''
   constructor(){
     // 响应式
     makeAutoObservable(this)
   }
 
-  setToken=async ({mobile,code})=>{
+  getToken=async ({mobile,code})=>{
     // 调用登录接口
     const res = await http.post('http://geek.itheima.net/v1_0/authorizations',{mobile, code})
-
+    console.log(res.data);
     // 存入token
-    this.token=res.data
+    this.token=res.data.token
+    //存入localStroage
+    setToken(this.token)
   }
 }
 
