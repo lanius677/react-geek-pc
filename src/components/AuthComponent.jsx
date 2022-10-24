@@ -7,16 +7,16 @@ import { getToken } from '@/utils';
 
 import { Navigate } from 'react-router-dom';
 
-const AuthComponent = ({ childen }) => {
+const AuthComponent = ( {children} ) => {
   const isToken = getToken()
   // 1. 判断token是否存在
   if (isToken) {
     // 2. 如果存在，直接正常渲染
-    return <>{childen}</>
+    return <>{children}</>
   } else {
     // 3. 如不存在，重定向登录路由
     return <Navigate to="/login" replace />
   }
 }
 
-export {AuthComponent}
+export { AuthComponent }

@@ -1,9 +1,10 @@
 // 导入路由
 import { BrowserRouter, Route, Router, Routes } from 'react-router-dom'
+import './App.css';
 
 // 导入页面组件
 import Login from '@/pages/Login'
-import Layout from '@/pages/Layout/index'
+import Layout from '@/pages/Layout'
 
 import { AuthComponent } from '@/components/AuthComponent';
 
