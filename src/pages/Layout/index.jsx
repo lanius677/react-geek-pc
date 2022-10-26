@@ -6,8 +6,10 @@ import {
   LogoutOutlined
 } from '@ant-design/icons'
 import './index.scss'
-import {Outlet, useNavigate,useLocation} from 'react-router-dom';
-
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useStore } from '@/store/index.jsx';
+import {observer} from 'mobx-react-lite';
 const { Header, Sider } = Layout
 
 const GeekLayout = () => {
@@ -19,29 +21,54 @@ const GeekLayout = () => {
   //   { label: <Link to="/publish">发布文章</Link>, key: '3' },
   // ];
 
-  const items=[
-    { label: '数据概览', key: '/',icon:<HomeOutlined/> }, // 菜单项务必填写 key
-    { label: '内容管理', key: '/article',icon:<DiffOutlined/> },
-    { label: '发布文章', key: '/publish',icon:<EditOutlined/> },
+  const items = [
+    { label: '数据概览', key: '/', icon: <HomeOutlined /> }, // 菜单项务必填写 key
+    { label: '内容管理', key: '/article', icon: <DiffOutlined /> },
+    { label: '发布文章', key: '/publish', icon: <EditOutlined /> },
   ];
 
   // 导航点击跳转事件
-  const navigator=useNavigate()
-  const clickMenu=(e)=>{
+  const navigator = useNavigate()
+  const clickMenu = (e) => {
     // console.log(e);
-    const {key}=e
+    const { key } = e
     navigator(key)
   }
 
-  const {pathname}=useLocation() // 默认是: /
+  const { pathname } = useLocation() // 默认是: /
+
+  // 获取用户数据
+  const { userStore } = useStore()
+  useEffect(()=>{
+    try {
+      userStore.getUserInfo()
+    } catch { }
+  },[userStore])
+
+  // 确定登出操作
+  const { loginStore } = useStore()
+
+  const confirmLoginOut=()=>{
+    //删除token
+    loginStore.loginOut()
+    //跳回登录
+    navigator('/login')
+
+  }
+
   return (
     <Layout>
       <Header className="header">
         <div className="logo" />
         <div className="user-info">
-          <span className="user-name">user.name</span>
+          <span className="user-name">{userStore.userInfo.name}</span>
           <span className="user-logout">
-            <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
+            <Popconfirm 
+            title="是否确认退出？" 
+            okText="退出"
+            cancelText="取消"
+            onConfirm={confirmLoginOut}
+            >
               <LogoutOutlined /> 退出
             </Popconfirm>
           </span>
@@ -56,17 +83,17 @@ const GeekLayout = () => {
             selectedKeys={[pathname]}
             style={{ height: '100%', borderRight: 0 }}
             items={items}
-            onClick={(e)=>clickMenu(e)}
+            onClick={(e) => clickMenu(e)}
           >
           </Menu>
         </Sider>
         <Layout className="layout-content" style={{ padding: 20 }}>
           {/* 二级路由 */}
-        <Outlet></Outlet>
+          <Outlet></Outlet>
         </Layout>
       </Layout>
     </Layout>
   )
 }
 
-export default GeekLayout
+export default observer(GeekLayout)

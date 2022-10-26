@@ -11,11 +11,13 @@ import Publish from '@/pages/Publish'
 
 import { AuthComponent } from '@/components/AuthComponent';
 
+import { HistoryRouter, history } from '@/utils/history.jsx'
+
 // 配置路由规则
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <HistoryRouter history={history}>
         <Routes>
           {/* Layout需要鉴权处理的 */}
           <Route path="/*" element={
@@ -30,7 +32,7 @@ function App() {
           {/* 这个不需要 */}
           <Route path="/login" element={<Login />} />
         </Routes>
-      </BrowserRouter>
+      </HistoryRouter>
     </div>
   )
 }

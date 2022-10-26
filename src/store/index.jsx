@@ -1,12 +1,13 @@
 // 把所有的模块做统一处理
 // 导出一个统一的方法useStore
 import LoginStore from './login.Store'
+import UserStore from './user.Store'
 import React from 'react';
 class RootStore{
   constructor(){
     this.loginStore=new LoginStore()
+    this.userStore=new UserStore()
   }
-
 }
 
 // 实例化操作
