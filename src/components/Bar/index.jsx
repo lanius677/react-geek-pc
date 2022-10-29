@@ -11,37 +11,38 @@ import * as echarts from 'echarts'
 import { useEffect, useRef } from 'react'
 
 //echarts初始化
-function echartsInit(node, xData, sData, title){
+function echartInit(node, xData, sData, title) {
   let myChart = echarts.init(node);
-    // 基于准备好的dom，初始化echarts实例
-    // 绘制图表
-    myChart.setOption({
-      title: {
-        text: title
-      },
-      tooltip: {},
-      xAxis: {
-        data: xData
-      },
-      yAxis: {},
-      series: [
-        {
-          name: '销量',
-          type: 'bar',
-          data: sData
-        }
-      ]
-    });
+  // 基于准备好的dom，初始化echarts实例
+  // 绘制图表
+  myChart.setOption({
+    title: {
+      text: title
+    },
+    tooltip: {},
+    xAxis: {
+      data: xData
+    },
+    yAxis: {},
+    series: [
+      {
+        name: '销量',
+        type: 'bar',
+        data: sData
+      }
+    ]
+  });
 }
 
-function Bar() {
+function Bar({ style, xData, sData, title }) {
+  const nodeRef = useRef(null)
   useEffect(() => {
-  }, [])
+    echartInit(nodeRef.current, xData, sData, title)
+  }, [xData, sData])
+
 
   return (
-    <div ref={domRef} style={{ width: '500px', height: '400px' }}>
-
-    </div>
+    <div ref={nodeRef} style={style}></div>
   )
 
 }
