@@ -13,7 +13,7 @@ const Login = () => {
   const navigate = useNavigate()
 
   const onFinish = async (values) => {
-    console.log('Success:', values);
+    // console.log('Success:', values);
     // values 放置的是所有表单中用户输入的内容
     try {
       await loginStore.getToken({

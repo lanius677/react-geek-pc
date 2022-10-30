@@ -15,7 +15,7 @@ class UserStore {
     runInAction(() => {
       this.userInfo = res.data
     })
-    console.log('userInfo',this.userInfo)
+    // console.log('userInfo',this.userInfo)
   }
 }
 
