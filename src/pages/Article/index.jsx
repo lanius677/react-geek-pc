@@ -52,11 +52,32 @@ const Article = () => {
         list:results,
         count:total_count
       })
-      
     }
     loadList()
   }, [params])
 
+  const onFinish=(values)=>{
+    console.log(values)
+    const {channel_id,date,status}=values
+
+    //数据处理
+    const _params={}
+    if(status!==-1){
+      _params.status=status
+    }
+
+    if(channel_id){
+      _params.channel_id=channel_id
+    }
+
+    if(date){
+      _params.begin_pubdate = date[0].format('YYYY-MM-DD')
+      _params.end_pubdate = date[1].format('YYYY-MM-DD')
+    }
+
+    // 修改params代码 引起接口的重新发送 对象的合并是一个整体覆盖
+    setParams({...params,..._params})
+  }
 
 
   const columns = [
@@ -127,10 +148,10 @@ const Article = () => {
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialvalues={{ status: null }}>
+        <Form initialvalues={{ status: null }} onFinish={onFinish}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
-              <Radio value={undefined}>全部</Radio>
+              <Radio value={-1}>全部</Radio>
               <Radio value={0}>草稿</Radio>
               <Radio value={1}>待审核</Radio>
               <Radio value={2}>审核通过</Radio>
