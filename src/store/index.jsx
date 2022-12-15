@@ -2,11 +2,13 @@
 // 导出一个统一的方法useStore
 import LoginStore from './login.Store'
 import UserStore from './user.Store'
+import channelStore from './channel.Store';
 import React from 'react';
 class RootStore{
   constructor(){
     this.loginStore=new LoginStore()
     this.userStore=new UserStore()
+    this.channelStore=new channelStore()
   }
 }
 
