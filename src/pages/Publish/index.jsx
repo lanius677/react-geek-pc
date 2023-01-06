@@ -14,10 +14,20 @@ import 'react-quill/dist/quill.snow.css';
 import { PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import './index.scss'
+import { useStore } from '@/store';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 
 const { Option } = Select
 
 const Publish = () => {
+  const { channelStore } = useStore()
+  //存在上传图片的列表
+  const [fileList,setFileList]=useState([])
+  const onUploadChange=({fileList})=>{
+   // console.log(fileList)
+    setFileList(fileList)
+  }
   return (
     <div className="publish">
       <Card
@@ -34,7 +44,7 @@ const Publish = () => {
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
           // 注意：此处需要为富文本编辑表示的 content 文章内容设置默认值
-          initialValues={{ content: '',type:1}}
+          initialValues={{ content: '', type: 1 }}
         >
           <Form.Item
             label="标题"
@@ -49,7 +59,9 @@ const Publish = () => {
             rules={[{ required: true, message: '请选择文章频道' }]}
           >
             <Select placeholder="请选择文章频道" style={{ width: 400 }}>
-              <Option value={0}>推荐</Option>
+              {channelStore.channelList.map(item => (
+                <Option key={item.id} value={item.key}>{item.name}</Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -66,6 +78,9 @@ const Publish = () => {
               listType="picture-card"
               className="avatar-uploader"
               showUploadList
+              action="http://geek.itheima.net/v1_0/upload"
+              fileList={fileList}
+              onChange={onUploadChange}
             >
               <div style={{ marginTop: 8 }}>
                 <PlusOutlined />
@@ -79,10 +94,10 @@ const Publish = () => {
             name="content"
             rules={[{ required: true, message: '请输入文章内容' }]}
           >
-            <ReactQuill 
-            className='publish-quill'
-            theme="snow" 
-            placeholder="请输入文章内容"
+            <ReactQuill
+              className='publish-quill'
+              theme="snow"
+              placeholder="请输入文章内容"
             />
           </Form.Item>
 
@@ -99,4 +114,4 @@ const Publish = () => {
   )
 }
 
-export default Publish
+export default observer(Publish)

@@ -1,5 +1,5 @@
 import {makeAutoObservable} from 'mobx';
-import http from '@/utils'
+import {http} from '@/utils'
 class ChannelStore{
   channelList=[]
   constructor(){
@@ -8,6 +8,7 @@ class ChannelStore{
 
   loadChannelList=async ()=>{
     const res=await http.get('/channels')
+    console.log(res)
     this.channelList=res.data.channels
   }
 }

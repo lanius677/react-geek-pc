@@ -38,16 +38,15 @@ const GeekLayout = () => {
   const { pathname } = useLocation() // 默认是: /
 
   // 获取用户数据
-  const { userStore } = useStore()
+  const { userStore,loginStore,channelStore} = useStore()
   useEffect(()=>{
     try {
       userStore.getUserInfo()
+      channelStore.loadChannelList()
     } catch { }
-  },[userStore])
+  },[userStore,channelStore])
 
   // 确定登出操作
-  const { loginStore } = useStore()
-
   const confirmLoginOut=()=>{
     //删除token
     loginStore.loginOut()

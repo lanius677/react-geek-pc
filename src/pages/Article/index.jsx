@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select, Table, Tag, Space,Popconfirm } from 'antd'
+import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select, Table, Tag, Space, Popconfirm } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
 import 'moment/locale/zh-cn'
@@ -8,7 +8,9 @@ import './index.scss'
 
 import img404 from '@/assets/404error.png'
 import { useEffect, useState } from 'react'
+import { useStore } from '@/store';
 import { http } from '@/utils'
+import { observer } from 'mobx-react-lite'
 
 
 const { Option } = Select
@@ -16,17 +18,9 @@ const { RangePicker } = DatePicker
 
 
 const Article = () => {
-  //频道列表管理
-  const [channeList, setChanneList] = useState([])
 
-  useEffect(() => {
-    const loadChannelList = async () => {
-      const res = await http.get('/channels')
-      // console.log(res);
-      setChanneList(res.data.channels)
-    }
-    loadChannelList()
-  }, [])
+
+  const { channelStore } = useStore()
 
   // 文章列表数据管理
   // 统一管理数据,将来修改给setList传对象
@@ -100,8 +94,8 @@ const Article = () => {
   }
 
   //跳转编辑
-  const navigte=useNavigate()
-  const goPublish=(data)=>{
+  const navigte = useNavigate()
+  const goPublish = (data) => {
     navigte(`/publish?id=${data.id}`)
   }
 
@@ -145,11 +139,11 @@ const Article = () => {
       render: data => {
         return (
           <Space size="middle">
-            <Button 
-            type="primary" 
-            shape="circle" 
-            icon={<EditOutlined />} 
-            onClick={()=>goPublish(data)}
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={() => goPublish(data)}
             />
             <Popconfirm
               title="确认删除该条文章吗?"
@@ -201,8 +195,8 @@ const Article = () => {
               placeholder="请选择文章频道"
               style={{ width: 120 }}
             >
-              {channeList.map((item) => (
-                <Option value={item.id} key={item.id}>{item.name}</Option>
+              {channelStore.channelList.map((item) => (
+                <Option key={item.id} value={item.id} >{item.name}</Option>
 
               ))}
             </Select>
@@ -238,4 +232,4 @@ const Article = () => {
   )
 }
 
-export default Article
+export default observer(Article)
