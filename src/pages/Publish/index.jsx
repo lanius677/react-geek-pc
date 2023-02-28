@@ -7,17 +7,18 @@ import {
   Input,
   Upload,
   Space,
-  Select
+  Select,
+  message
 } from 'antd'
 import { http } from '@/utils';
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css';
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import { useStore } from '@/store';
 import { observer } from 'mobx-react-lite';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const { Option } = Select
 
@@ -27,11 +28,19 @@ const Publish = () => {
   const [fileList, setFileList] = useState([])
   const cacheImgList = useRef()
   const onUploadChange = ({ fileList }) => {
-    console.log(fileList)
-    setFileList(fileList)
+    // console.log(fileList)
 
+    const formatList=fileList.map(file=>{
+      if(file.response){
+        return {
+          url:file.response.data.url
+        }
+      }
+      return file
+    })
+    setFileList(formatList)
     // 同时把图片列表存入仓库一份
-    cacheImgList.current = fileList
+    cacheImgList.current = formatList
 
   }
 
@@ -58,6 +67,7 @@ const Publish = () => {
   }
 
   // 提交表单
+  const navigator=useNavigate()
   const onFinish = async (values) => {
     // console.log(value)
     // 数据的二次处理 重点是cover字段
@@ -69,13 +79,51 @@ const Publish = () => {
       type,
       cover: {
         type: type,
-        image: fileList.map(item => item.response.data.url)
+        image: fileList.map(item => item.url)
       }
     }
 
     // console.log(params)
-    await http.post('/mp/articles?draft=false', params)
+    if(articleId){
+      // 编辑
+      await http.put(`/mp/articles/${articleId}?draft=false`,params)
+    }else{
+      // 新增
+      await http.post('/mp/articles?draft=false', params)
+    }
+
+    //跳转列表
+    navigator('/article')
+    message.success(`${articleId?'更新成功': '更新失败'}`)
   }
+
+  // 编辑功能
+  // 文案适配 路由参数id 判断条件
+  const [params] = useSearchParams()
+  const articleId = params.get('id')
+  // console.log('id:', articleId)
+
+  // 数据回填 
+  const formRef = useRef(null)
+  useEffect(() => {
+    const loadDetail = async () => {
+      const res = await http.get(`/mp/articles/${articleId}`)
+      const { cover, ...formValue } = res.data
+      // 表单数据回填 实例方法
+      formRef.current.setFieldsValue({ ...formValue, type: cover.type })
+      // 调用setFileList方法回填upload
+      const formImgList = cover.images.map(url => ({ url }))
+      setFileList(formImgList)
+      // 暂存列表里也存一份
+      cacheImgList.current = formImgList
+    }
+    // 必须存在编辑id 
+    if (articleId) {
+      loadDetail()
+    }
+  }, [articleId])
+
+
 
   return (
     <div className="publish">
@@ -85,7 +133,9 @@ const Publish = () => {
             <Breadcrumb.Item>
               <Link to="/home">首页</Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Item>发布文章</Breadcrumb.Item>
+            <Breadcrumb.Item>
+              {articleId ? '修改文章' : '发布文章'}
+            </Breadcrumb.Item>
           </Breadcrumb>
         }
       >
@@ -95,6 +145,7 @@ const Publish = () => {
           // 注意：此处需要为富文本编辑表示的 content 文章内容设置默认值
           initialValues={{ content: '', type: 1 }}
           onFinish={onFinish}
+          ref={formRef}
         >
           <Form.Item
             label="标题"
@@ -159,7 +210,7 @@ const Publish = () => {
           <Form.Item wrapperCol={{ offset: 4 }}>
             <Space>
               <Button size="large" type="primary" htmlType="submit">
-                发布文章
+                {articleId ? '修改文章' : '发布文章'}
               </Button>
             </Space>
           </Form.Item>
